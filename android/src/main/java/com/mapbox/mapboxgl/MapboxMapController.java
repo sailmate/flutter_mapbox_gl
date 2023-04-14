@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -314,7 +315,15 @@ final class MapboxMapController
 
   private LocationComponentOptions buildLocationComponentOptions(Style style) {
     final LocationComponentOptions.Builder optionsBuilder =
-        LocationComponentOptions.builder(context);
+        LocationComponentOptions.builder(context)
+          .accuracyColor(Color.WHITE)
+          .accuracyAlpha(.6f)
+          .foregroundTintColor(Color.RED)
+          .pulseEnabled(false)
+          .pulseColor(Color.RED)
+          .pulseSingleDuration(3000)
+          .minZoomIconScale(1.3f)
+          .backgroundTintColor(Color.WHITE);
     optionsBuilder.trackingGesturesManagement(true);
 
     final String lastLayerId = getLastLayerOnStyle(style);
