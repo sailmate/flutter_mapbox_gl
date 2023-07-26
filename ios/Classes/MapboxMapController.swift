@@ -47,6 +47,8 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.registrar = registrar
 
+        mapView.locationManager.setDistanceFilter?(50)
+
         super.init()
 
         channel = FlutterMethodChannel(
@@ -885,7 +887,7 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
             for: UIControl.Event.touchUpInside
         )
     }
-  
+
   class CustomUserLocationAnnotationView: MGLUserLocationAnnotationView {
     let size: CGFloat = 24
     var dot: CALayer!
@@ -1065,7 +1067,7 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
             }
         }
     }
-  
+
     func mapView(_ mapView: MGLMapView, viewFor annotation: MGLAnnotation) -> MGLAnnotationView? {
       // Substitute our custom view for the user location annotation. This custom view is defined below.
       if annotation is MGLUserLocation && mapView.userLocation != nil {
