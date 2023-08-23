@@ -47,9 +47,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.registrar = registrar
 
-        mapView.locationManager.setDistanceFilter?(kCLDistanceFilterNone)
+        mapView.locationManager.setDistanceFilter?(10)
         //mapView.locationManager.setHeadingFilter(kCLHeadingFilterNone)
-        mapView.locationManager.setDesiredAccuracy?(kCLLocationAccuracyBestForNavigation)
+        //mapView.locationManager.setDesiredAccuracy?(kCLLocationAccuracyBestForNavigation)
 
         super.init()
 
@@ -909,7 +909,13 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
            }
         } else {
             timer!.invalidate()
-            timer = nil
+            timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
+                print("timer fired!")
+                CATransaction.begin()
+          CATransaction.setDisableActions(true)
+          self.dot.setAffineTransform(CGAffineTransform.identity.scaledBy(x: 4, y: 4))
+          CATransaction.commit()
+           }
         }
       if frame.isNull {
         frame = CGRect(x: 0, y: 0, width: size, height: size)
