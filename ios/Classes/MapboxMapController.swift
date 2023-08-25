@@ -710,8 +710,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
 
     private func restartLocationUpdates() {
         mapView.locationManager.stopUpdatingLocation()
-        // mapView.locationManager.startUpdatingLocation()
+        mapView.locationManager.startUpdatingLocation()
         mapView.locationManager.stopUpdatingHeading()
+        mapView.locationManager.startUpdatingHeading()
     }
 
     private func loadIconImage(name: String) -> UIImage? {
