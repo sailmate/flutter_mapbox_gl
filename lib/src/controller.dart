@@ -246,6 +246,10 @@ class MapboxMapController extends ChangeNotifier {
 
   final MapboxGlPlatform _mapboxGlPlatform; //ignore: unused_field
 
+  Future<void> restartLocationUpdates() async {
+    await _mapboxGlPlatform.restartLocationUpdates();
+  }
+
   /// Updates configuration options of the map user interface.
   ///
   /// Change listeners are notified once the update has been made on the

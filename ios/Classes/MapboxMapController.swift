@@ -146,6 +146,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
             } else {
                 mapReadyResult = result
             }
+        case "locationComponent#restart":
+            restartLocationUpdates()
+            result(nil)
         case "map#update":
             guard let arguments = methodCall.arguments as? [String: Any] else { return }
             Convert.interpretMapboxMapOptions(options: arguments["options"], delegate: self)
@@ -703,6 +706,12 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+
+    private func restartLocationUpdates() {
+        mapView.locationManager.stopUpdatingLocation()
+        // mapView.locationManager.startUpdatingLocation()
+        mapView.locationManager.stopUpdatingHeading()
     }
 
     private func loadIconImage(name: String) -> UIImage? {
