@@ -47,7 +47,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.registrar = registrar
 
-        mapView.locationManager.setDistanceFilter?(50)
+        mapView.locationManager.setDistanceFilter?(10)
+        //mapView.locationManager.setHeadingFilter(kCLHeadingFilterNone)
+        //mapView.locationManager.setDesiredAccuracy?(kCLLocationAccuracyBestForNavigation)
 
         super.init()
 
@@ -144,6 +146,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
             } else {
                 mapReadyResult = result
             }
+        case "locationComponent#restart":
+            restartLocationUpdates()
+            result(nil)
         case "map#update":
             guard let arguments = methodCall.arguments as? [String: Any] else { return }
             Convert.interpretMapboxMapOptions(options: arguments["options"], delegate: self)
@@ -703,6 +708,13 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         }
     }
 
+    private func restartLocationUpdates() {
+        mapView.locationManager.stopUpdatingLocation()
+        mapView.locationManager.startUpdatingLocation()
+        mapView.locationManager.stopUpdatingHeading()
+        mapView.locationManager.startUpdatingHeading()
+    }
+
     private func loadIconImage(name: String) -> UIImage? {
         // Build up the full path of the asset.
         // First find the last '/' ans split the image name in the asset directory and the image file name.
@@ -893,8 +905,28 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
     var dot: CALayer!
     var arrow: CAShapeLayer!
 
+    var timer: Timer?
+
     // -update is a method inherited from MGLUserLocationAnnotationView. It updates the appearance of the user location annotation when needed. This can be called many times a second, so be careful to keep it lightweight.
     override func update() {
+        if (timer == nil) {
+            timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
+                print("timer fired!")
+                CATransaction.begin()
+          CATransaction.setDisableActions(true)
+          self.dot.setAffineTransform(CGAffineTransform.identity.scaledBy(x: 4, y: 4))
+          CATransaction.commit()
+           }
+        } else {
+            timer!.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
+                print("timer fired!")
+                CATransaction.begin()
+          CATransaction.setDisableActions(true)
+          self.dot.setAffineTransform(CGAffineTransform.identity.scaledBy(x: 4, y: 4))
+          CATransaction.commit()
+           }
+        }
       if frame.isNull {
         frame = CGRect(x: 0, y: 0, width: size, height: size)
         return setNeedsLayout()
@@ -913,14 +945,22 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         arrow.isHidden = false
 
         // Get the difference between the map’s current direction and the user’s heading, then convert it from degrees to radians.
-        let rotation: CGFloat = -MGLRadiansFromDegrees(mapView!.direction - heading)
+        var rotation: CGFloat = -MGLRadiansFromDegrees(mapView!.direction - heading)
+        var scale: CGFloat = 0.03
+
+        if let speed = userLocation!.location?.speed {
+            if (speed > 0.1) {
+            rotation = -MGLRadiansFromDegrees(mapView!.direction - userLocation!.location!.course)
+            scale = 1
+            }
+        }
 
         // If the difference would be perceptible, rotate the arrow.
         if abs(rotation) > 0.01 {
           // Disable implicit animations of this rotation, which reduces lag between changes.
           CATransaction.begin()
           CATransaction.setDisableActions(true)
-          arrow.setAffineTransform(CGAffineTransform.identity.rotated(by: rotation))
+          arrow.setAffineTransform(CGAffineTransform.identity.scaledBy(x: 1, y: scale).concatenating(CGAffineTransform.identity.rotated(by: rotation - CGFloat.pi)))
           CATransaction.commit()
         }
       } else {
@@ -952,35 +992,45 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
       if arrow == nil {
         arrow = CAShapeLayer()
         arrow.path = arrowPath()
-        arrow.frame = CGRect(x: 0, y: 0, width: size / 2, height: size / 2)
+        //arrow.frame = CGRect(x: 0, y: 0, width: size / 2, height: size / 2)
         arrow.position = CGPoint(x: dot.frame.midX, y: dot.frame.midY)
-        arrow.fillColor = dot.borderColor
+        arrow.fillColor = UIColor.red.cgColor
+        arrow.strokeColor = UIColor.red.cgColor
         layer.addSublayer(arrow)
       }
     }
 
     // Calculate the vector path for an arrow, for use in a shape layer.
     private func arrowPath() -> CGPath {
-      let max: CGFloat = size / 2
+      let max: CGFloat = size
       let pad: CGFloat = 3
 
+      let start = CGPoint(x: -10.5, y: -1.5)
+      let end = CGPoint(x: 1000, y: -1.5)
+
+
       let top =    CGPoint(x: max * 0.5, y: 0)
-      let left =   CGPoint(x: 0 + pad,   y: max - pad)
-      let right =  CGPoint(x: max - pad, y: max - pad)
-      let center = CGPoint(x: max * 0.5, y: max * 0.6)
+        let left =   CGPoint(x: 0 + pad,   y: max - pad)
+        let right =  CGPoint(x: max - pad, y: max - pad)
+        let center = CGPoint(x: 0, y: 0)
 
-      let bezierPath = UIBezierPath()
-      bezierPath.move(to: top)
-      bezierPath.addLine(to: left)
-      bezierPath.addLine(to: center)
-      bezierPath.addLine(to: right)
-      bezierPath.addLine(to: top)
-      bezierPath.close()
+        let bezierPath = UIBezierPath(roundedRect: CGRect(x: -1.5, y: 0, width: 3, height: 500), cornerRadius: 32)
 
-      return bezierPath.cgPath
+        /* let bezierPath = UIBezierPath()
+        bezierPath.move(to: top)
+        bezierPath.addLine(to: left)
+        bezierPath.addLine(to: center)
+        bezierPath.addLine(to: right)
+        bezierPath.addLine(to: top)
+        bezierPath.close()
+        bezierPath.move(to: top)
+        bezierPath.addLine(to: CGPoint(x: 100, y: 100))
+        bezierPath.fill() */
+
+
+        return bezierPath.cgPath
     }
   }
-
     /*
      * Custom click handler for the attribution button. This callback is bound when
      * the application specifies an onAttributionClick handler.
@@ -1540,9 +1590,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
     func setMyLocationRenderMode(myLocationRenderMode: MyLocationRenderMode) {
         switch myLocationRenderMode {
         case .Normal:
-            mapView.showsUserHeadingIndicator = false
+            mapView.showsUserHeadingIndicator = true
         case .Compass:
-            mapView.showsUserHeadingIndicator = false
+            mapView.showsUserHeadingIndicator = true
         case .Gps:
             NSLog("RenderMode.GPS currently not supported")
         }

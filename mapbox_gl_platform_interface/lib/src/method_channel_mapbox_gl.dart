@@ -199,6 +199,11 @@ class MethodChannelMapboxGl extends MapboxGlPlatform {
   }
 
   @override
+  Future<void> restartLocationUpdates() async {
+    await _channel.invokeMethod('locationComponent#restart');
+  }
+
+  @override
   Future<CameraPosition?> updateMapOptions(
       Map<String, dynamic> optionsUpdate) async {
     final dynamic json = await _channel.invokeMethod(

@@ -50,6 +50,7 @@ abstract class MapboxGlPlatform {
       Map<String, dynamic> creationParams,
       OnPlatformViewCreatedCallback onPlatformViewCreated,
       Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers);
+  Future<void> restartLocationUpdates();
   Future<CameraPosition?> updateMapOptions(Map<String, dynamic> optionsUpdate);
   Future<bool?> animateCamera(CameraUpdate cameraUpdate);
   Future<bool?> moveCamera(CameraUpdate cameraUpdate);
