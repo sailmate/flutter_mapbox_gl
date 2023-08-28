@@ -169,6 +169,13 @@ class MapboxWebGlPlatform extends MapboxGlPlatform
   }
 
   @override
+  Future<void> restartLocationUpdates() {
+    throw Exception('restartLocationUpdates not available in web');
+  }
+
+
+
+  @override
   Future<CameraPosition?> updateMapOptions(
       Map<String, dynamic> optionsUpdate) async {
     // FIX: why is called indefinitely? (map_ui page)
