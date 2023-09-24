@@ -149,6 +149,12 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         case "locationComponent#restart":
             restartLocationUpdates()
             result(nil)
+        case "locationComponent#stop":
+            stopLocationUpdates()
+            result(nil)
+        case "locationComponent#start":
+            startLocationUpdates()
+            result(nil)
         case "map#update":
             guard let arguments = methodCall.arguments as? [String: Any] else { return }
             Convert.interpretMapboxMapOptions(options: arguments["options"], delegate: self)
@@ -712,6 +718,14 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         mapView.locationManager.stopUpdatingLocation()
         mapView.locationManager.startUpdatingLocation()
         mapView.locationManager.stopUpdatingHeading()
+        mapView.locationManager.startUpdatingHeading()
+    }
+    private func stopLocationUpdates() {
+        mapView.locationManager.stopUpdatingLocation()
+        mapView.locationManager.stopUpdatingHeading()
+    }
+    private func startLocationUpdates() {
+        mapView.locationManager.startUpdatingLocation()
         mapView.locationManager.startUpdatingHeading()
     }
 

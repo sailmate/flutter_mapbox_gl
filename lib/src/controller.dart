@@ -249,6 +249,12 @@ class MapboxMapController extends ChangeNotifier {
   Future<void> restartLocationUpdates() async {
     await _mapboxGlPlatform.restartLocationUpdates();
   }
+  Future<void> stopLocationUpdates() async {
+    await _mapboxGlPlatform.stopLocationUpdates();
+  }
+  Future<void> startLocationUpdates() async {
+    await _mapboxGlPlatform.startLocationUpdates();
+  }
 
   /// Updates configuration options of the map user interface.
   ///
