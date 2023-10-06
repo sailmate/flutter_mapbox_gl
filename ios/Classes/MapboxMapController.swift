@@ -47,6 +47,8 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.registrar = registrar
 
+        mapView.locationManager.setDistanceFilter?(2)
+
         super.init()
 
         channel = FlutterMethodChannel(
