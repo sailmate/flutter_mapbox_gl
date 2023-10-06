@@ -47,10 +47,6 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.registrar = registrar
 
-        mapView.locationManager.setDistanceFilter?(10)
-        //mapView.locationManager.setHeadingFilter(kCLHeadingFilterNone)
-        //mapView.locationManager.setDesiredAccuracy?(kCLLocationAccuracyBestForNavigation)
-
         super.init()
 
         channel = FlutterMethodChannel(
