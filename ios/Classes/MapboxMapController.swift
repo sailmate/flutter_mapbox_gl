@@ -722,7 +722,6 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         mapView.showsUserLocation = false
         mapView.locationManager.stopUpdatingLocation()
         mapView.locationManager.stopUpdatingHeading()
-        mapView.locationManager.stopMonitoringSignificantLocationChanges()
     }
     private func startLocationUpdates() {
         mapView.showsUserLocation = true
