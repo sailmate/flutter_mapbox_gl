@@ -923,7 +923,7 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
 
     // -update is a method inherited from MGLUserLocationAnnotationView. It updates the appearance of the user location annotation when needed. This can be called many times a second, so be careful to keep it lightweight.
     override func update() {
-        if (timer == nil) {
+        /* if (timer == nil) {
             timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
                 print("timer fired!")
                 CATransaction.begin()
@@ -940,7 +940,7 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
           self.dot.setAffineTransform(CGAffineTransform.identity.scaledBy(x: 4, y: 4))
           CATransaction.commit()
            }
-        }
+        } */
       if frame.isNull {
         frame = CGRect(x: 0, y: 0, width: size, height: size)
         return setNeedsLayout()
