@@ -963,9 +963,11 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
         var scale: CGFloat = 0.03
 
         if let speed = userLocation!.location?.speed {
-            if (speed > 0.1) {
-            rotation = -MGLRadiansFromDegrees(mapView!.direction - userLocation!.location!.course)
-            scale = 1
+            if (speed > 0.5) {
+                if let course = userLocation!.location?.course && course != -1 {
+                    rotation = -MGLRadiansFromDegrees(mapView!.direction - course)
+                    scale = 1
+                }
             }
         }
 
